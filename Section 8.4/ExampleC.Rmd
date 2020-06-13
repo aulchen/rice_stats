@@ -1,0 +1,52 @@
+---
+title: "Section 8.4, Example C - Method of Moments Estimation of the Parameters of the Gamma Distribution"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+First we load the data.
+
+```{r, echo = FALSE}
+data <- scan("Illinois60.csv")
+data <- c(data, scan("Illinois61.csv"))
+data <- c(data, scan("Illinois62.csv"))
+data <- c(data, scan("Illinois63.csv"))
+data <- c(data, scan("Illinois64.csv"))
+
+          
+```
+
+```{r}
+length(data)
+```
+The data has been loaded correctly.
+
+We will model the data with a gamma distribution with parameters $\alpha$ and $\beta$. From the text, the method of moments estimates of the parameters are
+
+$$
+\hat{\alpha} = \frac{\bar{X}^2}{\hat{\sigma}^2}
+$$
+
+and
+
+$$
+\hat{\beta} = \frac{\bar{X}}{\hat{\sigma}^2}
+$$
+
+Now we calculate $\bar{X}$ and $\bar{\sigma}^2$.
+
+```{r}
+xbar = mean(data)
+sigma2 = var(data)
+```
+
+The data has $\bar{X} = $ `r print(xbar)`
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
