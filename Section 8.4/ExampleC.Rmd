@@ -49,11 +49,38 @@ The data has $\bar{X} =$ `r xbar` and $\hat{\sigma}^2 =$ `r sigma2hat`. This pro
 
 Now we will calculate the standard errors for these estimates. We will generate 1000 samples of 227 draws from a gamma distribution with $\hat{\alpha} =$ `r ahat` and $\hat{\beta} =$ `r bhat`, then calculate 1000 isntances of $\hat{\alpha}$ and $\hat{\beta}$, then take the standard deviations of those estimates and use them as estimates for the standard deviation of $\hat{\alpha}$ and $\hat{\beta}$.
 
+```{r}
+# Initialize the vectors
+ahat_est <- vector(mode = 'numeric', length = 1000)
+bhat_est <- vector(mode = 'numeric', length = 1000)
 
+gen_ahat <- function(data) {
+  xbar <- mean(data)
+  sigma2hat <- var(data)
+  ahat <- xbar^2 / sigma2hat
+  return(ahat)
+}
 
+gen_bhat <- function(data) {
+  xbar <- mean(data)
+  sigma2hat <- var(data)
+  bhat <- xbar / sigma2hat
+  return(bhat)
+}
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+#Generate 1000 draws from a gamma distribution and calculate the resulting a hat and b hat
+set.seed(1000)
+for(i in 1:1000){
+  data <- rgamma(227, shape = ahat, rate = bhat)
+  ahat_est[i] <- gen_ahat(data)
+  bhat_est[i] <- gen_bhat(data)
+}
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+ahat_ste <- sd(ahat_est)
+bhat_ste <- sd(bhat_est)
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```
+
+Thus the estimates of the standard errors for $\hat{\alpha}$ and $\hat{\beta}$ are $s_{\hat{
+\alpha}} =$ `r ahat_ste` and $s_{\hat{
+\beta}} =$ `r bhat_ste`. The corresponding estimates in the book are 0.06 and 0.34, respectively.
