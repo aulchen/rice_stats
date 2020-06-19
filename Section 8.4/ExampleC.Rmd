@@ -40,10 +40,17 @@ Now we calculate $\bar{X}$ and $\bar{\sigma}^2$.
 
 ```{r}
 xbar = mean(data)
-sigma2 = var(data)
+sigma2hat = var(data)
+bhat = xbar / sigma2hat
+ahat = bhat * xbar
 ```
 
-The data has $\bar{X} = $ `r print(xbar)`
+The data has $\bar{X} =$ `r xbar` and $\hat{\sigma}^2 =$ `r sigma2hat`. This produces estimates of $\hat{\alpha} =$ `r ahat` and $\hat{\beta} =$ `r bhat`.
+
+Now we will calculate the standard errors for these estimates. We will generate 1000 samples of 227 draws from a gamma distribution with $\hat{\alpha} =$ `r ahat` and $\hat{\beta} =$ `r bhat`, then calculate 1000 isntances of $\hat{\alpha}$ and $\hat{\beta}$, then take the standard deviations of those estimates and use them as estimates for the standard deviation of $\hat{\alpha}$ and $\hat{\beta}$.
+
+
+
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
 
