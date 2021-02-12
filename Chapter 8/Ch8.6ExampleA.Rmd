@@ -1,0 +1,53 @@
+---
+title: "Estimating the Paramater of the Poisson Distribution with MLE and Bayes"
+output: pdf_document
+---
+
+```{r setup, include = FALSE}
+library(reticulate)
+
+```
+
+```{r, echo=FALSE}
+data <- read.table("../Excel Comma/Chapter 8/poisson-asbestos.txt", quote="\"", comment.char="")
+data <- data$V1
+```
+
+## Maximum Likelihood Estimation
+
+For a Poisson distribution, the MLE estimator matches the method of moments estimator with $\hat{\lambda} = \bar{X}$, while the standard error of $\hat{\lambda}$ is $s_{\hat{\lambda}} = \sqrt{\frac{\hat{\lambda}} {n}}$.
+
+```{r}
+mleLambdaBar <- round(mean(data), 1)
+mleSLambdaBar <- round(sqrt(mleLambdaBar / length(data)), 2)
+```
+
+Thus the MLE estimates of $\bar{\lambda}$ and $s_{\bar{\lambda}}$ are `r mle.lambdaBar` and `r mle.sLambdaBar`, respectively, as in the book.
+
+## Bayesian Estimation, Uniform Prior
+
+Here, we assume that the prior distribution of $\lambda$ follows a uniform distrubution on [0, 100].
+
+First we compute the numerator of the posterior density.
+
+```{r}
+bayesPostDensNum <- function(lambda) {
+  xsum <- sum(data)
+  n <- length(data)
+  return(
+    (.01) * (lambda**xsum) * exp(-n * lambda)
+  )
+}
+```
+
+```{python}
+import scipy, math, decimal
+ctx = decimal.getcontext()
+ctx.prec = 1000
+def bayesPostDistNum(l):
+  xsum = sum(r.data)
+  n = len(r.data)
+  output = decimal.Decimal(0.01) * ctx.power(l, xsum) * ctx.exp(-(n) * l)
+  return output
+
+```
