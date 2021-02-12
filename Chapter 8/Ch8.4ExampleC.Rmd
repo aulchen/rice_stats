@@ -1,6 +1,9 @@
 ---
-title: "Section 8.4, Example C - Method of Moments Estimation of the Parameters of the Gamma Distribution"
-output: html_notebook
+title: Section 8.4, Example C - Method of Moments Estimation of the Parameters of
+  the Gamma Distribution
+output:
+  pdf_document: default
+  html_notebook: default
 ---
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
@@ -9,12 +12,16 @@ Try executing this chunk by clicking the *Run* button within the chunk or by pla
 
 First we load the data.
 
+```{r}
+getwd()
+```
+
 ```{r, echo = FALSE}
-data <- scan("Illinois60.csv")
-data <- c(data, scan("Illinois61.csv"))
-data <- c(data, scan("Illinois62.csv"))
-data <- c(data, scan("Illinois63.csv"))
-data <- c(data, scan("Illinois64.csv"))
+data <- scan("../Excel Comma/Chapter 10/Illinois60.csv")
+data <- c(data, scan("../Excel Comma/Chapter 10/Illinois61.csv"))
+data <- c(data, scan("../Excel Comma/Chapter 10/Illinois62.csv"))
+data <- c(data, scan("../Excel Comma/Chapter 10/Illinois63.csv"))
+data <- c(data, scan("../Excel Comma/Chapter 10/Illinois64.csv"))
 
           
 ```
