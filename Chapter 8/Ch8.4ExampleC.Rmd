@@ -47,7 +47,7 @@ Now we calculate $\hat{\alpha}_{MoM}$ and $\hat{\lambda}_{MoM}$.
 xbar = mean(data)
 sigma2hat = var(data)
 lhatMoM = xbar / sigma2hat
-ahatMoM = bhatMoM * xbar
+ahatMoM = lhatMoM * xbar
 ```
 
 The data has $\bar{X} =$ `r xbar` and $\hat{\sigma}^2 =$ `r sigma2hat`. This produces estimates of $\hat{\alpha}_{MoM} =$ `r ahatMoM` and $\hat{\lambda}_{MoM} =$ `r lhatMoM`.
