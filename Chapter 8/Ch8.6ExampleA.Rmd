@@ -26,33 +26,27 @@ Thus the MLE estimates of $\bar{\lambda}$ and $s_{\bar{\lambda}}$ are `r mle.lam
 
 ## Bayesian Estimation, Uniform Prior
 
-Here, we assume that the prior distribution of $\lambda$ follows a uniform distrubution on [0, 100].
+Here, we assume that the prior distribution of $\lambda$ follows a uniform distribution on [0, 100]. Thus, the posterior density of $\lambda$ takes the form
 
-First we compute the numerator of the posterior density.
+$$ 
+f_{\Lambda | X}(\lambda | x) \propto \lambda^{\sum^{n}_{i=1} x_i} e^{-n\lambda}, 0 \leq \lambda \leq 100
+$$
+
+First we compute the numerator of the posterior density, up to a proportionality constant. To prevent the production of infinities, we will shrink the posterior density of lambda by a factor of $10^{-500}$.
 
 ```{r}
 bayesPostDensNum <- function(lambda) {
   xsum <- sum(data)
   n <- length(data)
   return(
-    (.01) * (lambda**xsum) * exp(-n * lambda)
+    exp(
+      -500 * log(10) + 
+        (xsum * log(lambda) - (n * lambda))
+    )
   )
 }
 ```
 
-```{python}
-import scipy, math, decimal
-ctx = decimal.getcontext()
-ctx.prec = 1000
-def bayesPostDistNum(l):
-  xsum = sum(r.data)
-  n = len(r.data)
-  output = decimal.Decimal(0.01) * ctx.power(l, xsum) * ctx.exp(-(n) * l)
-  return output
-
-```
-```{python}
-import scipy.integrate, math
-#scipy.integrate.quad(bayesPostDistNum, decimal.Decimal(0), decimal.Decimal(100))
-scipy.integrate.quad(lambda l: 0.01 * l**573 * math.exp(-23 * l), 0, 100)
+```{r}
+plot.function(bayesPostDensNum, from = 0, to = 100, n = 400)
 ```
