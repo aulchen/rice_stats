@@ -51,3 +51,8 @@ def bayesPostDistNum(l):
   return output
 
 ```
+```{python}
+import scipy.integrate, math
+#scipy.integrate.quad(bayesPostDistNum, decimal.Decimal(0), decimal.Decimal(100))
+scipy.integrate.quad(lambda l: 0.01 * l**573 * math.exp(-23 * l), 0, 100)
+```

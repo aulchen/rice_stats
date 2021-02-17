@@ -1,14 +1,12 @@
 ---
-title: Section 8.4, Example C - Method of Moments Estimation of the Parameters of
+title: Section 8.4, Example C - Method of Moments and MLE Estimation of the Parameters of
   the Gamma Distribution
 output:
   pdf_document: default
   html_notebook: default
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+## Method of Moments Estimation
 
 First we load the data.
 
@@ -31,35 +29,35 @@ length(data)
 ```
 The data has been loaded correctly.
 
-We will model the data with a gamma distribution with parameters $\alpha$ and $\beta$. From the text, the method of moments estimates of the parameters are
+We will model the data with a gamma distribution with parameters $\alpha$ and $\lambda$. From the text, the method of moments estimates of the parameters are
 
 $$
-\hat{\alpha} = \frac{\bar{X}^2}{\hat{\sigma}^2}
+\hat{\alpha}_{MoM} = \frac{\bar{X}^2}{\hat{\sigma}^2}
 $$
 
 and
 
 $$
-\hat{\beta} = \frac{\bar{X}}{\hat{\sigma}^2}
+\hat{\lambda}_{MoM} = \frac{\bar{X}}{\hat{\sigma}^2}
 $$
 
-Now we calculate $\bar{X}$ and $\bar{\sigma}^2$.
+Now we calculate $\hat{\alpha}_{MoM}$ and $\hat{\lambda}_{MoM}$.
 
 ```{r}
 xbar = mean(data)
 sigma2hat = var(data)
-bhat = xbar / sigma2hat
-ahat = bhat * xbar
+lhatMoM = xbar / sigma2hat
+ahatMoM = bhatMoM * xbar
 ```
 
-The data has $\bar{X} =$ `r xbar` and $\hat{\sigma}^2 =$ `r sigma2hat`. This produces estimates of $\hat{\alpha} =$ `r ahat` and $\hat{\beta} =$ `r bhat`.
+The data has $\bar{X} =$ `r xbar` and $\hat{\sigma}^2 =$ `r sigma2hat`. This produces estimates of $\hat{\alpha}_{MoM} =$ `r ahatMoM` and $\hat{\lambda}_{MoM} =$ `r lhatMoM`.
 
-Now we will calculate the standard errors for these estimates. We will generate 1000 samples of 227 draws from a gamma distribution with $\hat{\alpha} =$ `r ahat` and $\hat{\beta} =$ `r bhat`, then calculate 1000 isntances of $\hat{\alpha}$ and $\hat{\beta}$, then take the standard deviations of those estimates and use them as estimates for the standard deviation of $\hat{\alpha}$ and $\hat{\beta}$.
+Now we will calculate the standard errors for these estimates. We will generate 1000 samples of 227 draws from a gamma distribution with $\alpha =$ `r ahatMoM` and $\lambda =$ `r lhatMoM`, then calculate 1000 instances of $\hat{\alpha}_{MoM}$ and $\hat{\lambda}_{MoM}$, then take the standard deviations of those estimates and use them as estimates for the standard deviations of $\hat{\alpha}_{MoM}$ and $\hat{\lambda}_{MoM}$.
 
 ```{r}
 # Initialize the vectors
 ahat_est <- vector(mode = 'numeric', length = 1000)
-bhat_est <- vector(mode = 'numeric', length = 1000)
+lhat_est <- vector(mode = 'numeric', length = 1000)
 
 gen_ahat <- function(data) {
   xbar <- mean(data)
@@ -68,26 +66,29 @@ gen_ahat <- function(data) {
   return(ahat)
 }
 
-gen_bhat <- function(data) {
+gen_lhat <- function(data) {
   xbar <- mean(data)
   sigma2hat <- var(data)
-  bhat <- xbar / sigma2hat
-  return(bhat)
+  lhat <- xbar / sigma2hat
+  return(lhat)
 }
 
 #Generate 1000 draws from a gamma distribution and calculate the resulting a hat and b hat
 set.seed(1000)
 for(i in 1:1000){
-  data <- rgamma(227, shape = ahat, rate = bhat)
+  data <- rgamma(227, shape = ahatMoM, rate = lhatMoM)
   ahat_est[i] <- gen_ahat(data)
-  bhat_est[i] <- gen_bhat(data)
+  lhat_est[i] <- gen_lhat(data)
 }
 
-ahat_ste <- sd(ahat_est)
-bhat_ste <- sd(bhat_est)
+ahatMoM_ste <- sd(ahat_est)
+lhatMoM_ste <- sd(lhat_est)
 
+rm('ahat_est', 'lhat_est', 'i')
 ```
 
-Thus the estimates of the standard errors for $\hat{\alpha}$ and $\hat{\beta}$ are $s_{\hat{
-\alpha}} =$ `r ahat_ste` and $s_{\hat{
-\beta}} =$ `r bhat_ste`. The corresponding estimates in the book are 0.06 and 0.34, respectively.
+Thus the estimates of the standard errors for $\hat{\alpha}_{MoM}$ and $\hat{\lambda}$ are $s_{\hat{\alpha}_{MoM}} =$ `r ahatMoM_ste` and $s_{\hat{\lambda}_{MoM}} =$ `r lhatMoM_ste`. The corresponding estimates in the book are 0.06 and 0.34, respectively.
+
+## Maximum Likelihood Estimation
+
+According to the book, the maximum likelihood estimator of $\alpha$, $\hat{\alpha}_{MLE}$ 
