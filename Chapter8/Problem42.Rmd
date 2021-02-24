@@ -1,0 +1,47 @@
+---
+title: "Problem 42"
+output: pdf_document
+---
+
+```{r}
+data <- read.csv("../Excel Comma/Chapter 8/gamma-ray.csv")
+```
+
+We will assume that gamma ray arrivals follow a Poisson process with parameter $\lambda$ arrivals per second. Under this assumption, let the `r length(data[[1]])` observations be indexed as $i = 1, 2, ... n$. Let $t_i$ and $k_i$ be the length of the $i$th time interval and the number of observed gamma rays during the $i$th time interval, respectively. I will assume that the time intervals are disjoint.
+
+According to the model, $X_i$, the number of arrivals during period $i$, follows a Poisson distribution with parameter $\lambda t_i$. Due to the assumption that the time intervals are disjoint, the $X_i$s are independent of each other.
+
+The distribution of $X_i$ is thus
+
+$$ P(X_i = k_i | \lambda, t_i) = \frac{(\lambda t_i)^{k_i} e^{-\lambda t_i}}
+  {k_i!} $$
+
+The likelihood function of $\lambda$ is thus
+
+$$
+lik(\lambda|\textbf{t, X = k}) = \frac{
+    (\lambda t_i)^{\sum_{i=1}^{n} k_i} e^{-\lambda \sum_{i=1}^{n} t_i}
+  }
+  {\prod_{i=1}^{n} (k_i!)}
+$$
+
+The log likelihood is thus
+
+$$
+l(\lambda) = ln(\lambda) \sum_{i=1}^n k_i + \sum_{i=1}^n k_i ln(t_i)
+  - \lambda \sum_{i=1}^n t_i - \sum_{i=1}^n ln(k_i !)
+$$
+
+The maximum likelihood estimator satisfies the first-order condition
+
+$$
+0 = \frac{1}{\hat{\lambda}} \sum_{i=1}^n k_i - \sum_{i=1}^n t_i
+$$
+
+Which after some rearranging, yields the maximum likelihood estimator
+
+$$
+\hat{\lambda} = \frac{\sum_{i=1}^n k_i}{\sum_{i=1}^n t_i}
+$$
+Setting all $t_i$'s to 1 yields the usual estimator for $\lambda$ in an iid sample from a Poisson distribution.
+
