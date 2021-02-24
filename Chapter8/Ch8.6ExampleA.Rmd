@@ -22,7 +22,7 @@ mleLambdaBar <- round(mean(data), 1)
 mleSLambdaBar <- round(sqrt(mleLambdaBar / length(data)), 2)
 ```
 
-Thus the MLE estimates of $\bar{\lambda}$ and $s_{\bar{\lambda}}$ are `r mle.lambdaBar` and `r mle.sLambdaBar`, respectively, as in the book.
+Thus the MLE estimates of $\bar{\lambda}$ and $s_{\bar{\lambda}}$ are `r mleLambdaBar` and `r mleSLambdaBar`, respectively, as in the book.
 
 ## Bayesian Estimation, Uniform Prior
 

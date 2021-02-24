@@ -3,7 +3,7 @@ title: "Problem 42"
 output: pdf_document
 ---
 
-##Estimating the Parameter of Poisson Arrivals with Variable Time Lengths
+## Estimating the Parameter of Poisson Arrivals with Variable Time Lengths
 
 ```{r}
 data <- read.csv("../Excel Comma/Chapter 8/gamma-ray.csv")
@@ -15,14 +15,16 @@ According to the model, $X_i$ follows a Poisson distribution with parameter $\la
 
 The distribution of $X_i$ is thus
 
-$$ P(X_i = k_i | \lambda, t_i) = \frac{(\lambda t_i)^{k_i} e^{-\lambda t_i}}
-  {k_i!} $$
+$$
+P(X_i = k_i | \lambda, t_i) = \frac{(\lambda t_i)^{k_i} e^{- \lambda t_i}}
+  {k_i!}
+$$
 
 The likelihood function of $\lambda$ is thus
 
 $$
 lik(\lambda|\textbf{t, X }) = \frac{
-    (\lambda t_i)^{\sum_{i=1}^{n} X_i} e^{-\lambda \sum_{i=1}^{n} t_i}
+    (\lambda t_i)^{\sum_{i=1}^{n} X_i} e^{- \lambda \sum_{i=1}^{n} t_i}
   }
   {\prod_{i=1}^{n} (X_i!)}
 $$
@@ -53,7 +55,7 @@ lambdaHat <- sum(data$count) / sum(data$seconds)
 
 Thus $\hat{\lambda}$ = `r lambdaHat`.
 
-##The Standard Error of the Estimate
+## The Standard Error of the Estimate
 
 Define $S = \sum_{i=1}^n X_i$ and $T = \sum_{i=1}^n t_i$. Then the estimator $\hat{\lambda}$ can be rewritten as 
 
@@ -70,4 +72,5 @@ $$
 s_lambdaHat <- sqrt(lambdaHat / sum(data$seconds))
 ```
 
-This produces $s_{\hat{\lambda}} = $ `r s_lambdaHat`.
+This produces $s_{\hat{\lambda}}$ = `r s_lambdaHat`.
+
