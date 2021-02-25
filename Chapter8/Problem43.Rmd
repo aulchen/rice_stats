@@ -1,0 +1,50 @@
+---
+title: "Problem 43"
+output: pdf_document
+---
+
+# Gamma Ray Interarrival Times
+
+## Initial Histogram
+
+```{r, echo=FALSE}
+data <- read.table("../Excel Comma/Chapter 8/gamma-arrivals.csv", quote="\"", comment.char="")
+data <- data[[1]]
+```
+
+The data consists of `r length(data)` observations of interarrival times for gamma rays, with units in seconds.
+
+```{r}
+hist(data, breaks = seq(from = 0, to = 750, by = 1), main = 'Histogram of Interarrival Times', xlab = 'Time (seconds)')
+```
+The interarrival times look roughly exponential, or at least gamma, since the exponential distribution is a special case of the gamma distribution. For the moment, we will assume that interarrival times are distributed via a gamma distribution.
+
+## Parameter Estimates
+
+### Method of Moments
+
+The method of moments estimators for $\alpha$ and $\gamma$ are
+
+$$ 
+\hat{\alpha}_{MoM} = \frac{\bar{X}^2}{\bar{\sigma}^2}
+$$
+$$
+\hat{\lambda}_{MoM} = \frac{\bar{X}}{\bar{\sigma}^2}
+$$
+
+```{r}
+aMoM <- (mean(data)^2) / var(data)
+lMoM <- mean(data) / var(data)
+```
+
+Thus the method of moments estimates are $\hat{\alpha}_{MoM}$ = `r aMoM` and $\hat{\lambda}_{MoM}$ = `r lMoM`.
+
+## Maximum Likelihood
+
+The maximum likelihood estimator for $\alpha$ satisfies the following equation
+
+$$
+nln(\hat{\alpha}) - nln(\bar{X}) + \sum_{i=1}^n ln(X_i) - n \psi(\hat{\alpha}) = 0
+$$
+
+Where $\psi(x)$ is the digamma function, $\frac{\Gamma'(x)}{\Gamma(x)}$.
