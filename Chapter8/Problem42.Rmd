@@ -3,6 +3,8 @@ title: "Problem 42"
 output: pdf_document
 ---
 
+# Gamma Ray Arrivals
+
 ## Estimating the Parameter of Poisson Arrivals with Variable Time Lengths
 
 ```{r}
@@ -74,3 +76,13 @@ s_lambdaHat <- sqrt(lambdaHat / sum(data$seconds))
 
 This produces $s_{\hat{\lambda}}$ = `r s_lambdaHat`.
 
+## Posterior Distribution Using an Improper Gamma
+
+Assume that the prior distribution of $\lambda$ follows an improper gamma distribution, $f_\Lambda(\lambda) \propto \lambda^{-1}$. Then the posterior distribution is proportional to
+
+$$
+f_{\Lambda}(\lambda | \textbf{X, t}) \propto \lambda^{\sum_{i=1}^n x_i - 1} \prod_{i=1}^n t_i^{x_i}
+\frac{e^{-\lambda \sum_{i=1}^n t_i}}{\prod_{i=1}^n x_i}
+\propto \lambda^{\sum_{i=1}^n x_i - 1} e^{-\lambda \sum_{i=1}^n t_i}
+$$
+Which is a gamma distribution with parameters $\sum_{i=1}^n x_i$ and $\sum_{i=1}^n t_i$.
