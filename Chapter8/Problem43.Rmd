@@ -33,8 +33,17 @@ $$
 $$
 
 ```{r}
-aMoM <- (mean(data)^2) / var(data)
-lMoM <- mean(data) / var(data)
+#Computes the MoM estimates of alpha and lambda for a gamma distribution, respectively
+gammaMoM <- function(data) {
+  output <- vector(mode = 'numeric', length = 2)
+  output[1] <- (mean(data)^2) / var(data)
+  output[2] <- mean(data) / var(data)
+  return(output)
+}
+foo <- gammaMoM(data)
+aMoM <- foo[1]
+lMoM <- foo[2]
+rm(foo)
 ```
 
 Thus the method of moments estimates are $\hat{\alpha}_{MoM}$ = `r aMoM` and $\hat{\lambda}_{MoM}$ = `r lMoM`.
@@ -47,4 +56,38 @@ $$
 nln(\hat{\alpha}) - nln(\bar{X}) + \sum_{i=1}^n ln(X_i) - n \psi(\hat{\alpha}) = 0
 $$
 
-Where $\psi(x)$ is the digamma function, $\frac{\Gamma'(x)}{\Gamma(x)}$.
+Where $\psi(x)$ is the digamma function, $\frac{\Gamma'(x)}{\Gamma(x)}$. Then an estimator for $\lambda$ is
+
+$$
+\hat{\lambda}_{MLE} = \frac{\hat{a}}{\bar{X}}
+$$
+
+We will use the method of moments estimator as an initial guess to solve for $\hat{\alpha}_MLE$.
+
+```{r}
+#Computes the MLE estimates of alpha and lambda for a gamma distribution, respectively
+gammaMLE <- function(data) {
+  aMoM <- gammaMoM(data)[1]
+  #Initialize variables
+  n <- length(data)
+  lnXBar <- log(mean(data))
+  sumLnX <- sum(log(data))
+  aMLEFun <- function(a) {
+    n*log(a) - n*lnXBar + sumLnX - n*digamma(a)
+  }
+  
+  #diagnostic plots
+  #x <- seq(from = aMoM - .5, to = aMoM + .5, by = 0.01)
+  #plot(x, aMLEFun(x))
+  aMLE <- uniroot(aMLEFun, interval = c(aMoM - .5, aMoM + .5))$root
+  lMLE <- aMLE / mean(data)
+  return(c(aMLE, lMLE))
+}
+
+foo <- gammaMLE(data)
+aMLE <- foo[1]
+lMLE <- foo[2]
+rm(foo)
+```
+
+Thus the maximum likelihood estimates are $\hat{\alpha}_{MLE}$ = `r aMLE` and $\hat{\lambda}_{MLE}$ = `r lMLE`.
