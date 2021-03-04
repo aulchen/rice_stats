@@ -35,20 +35,20 @@ $$
 ```{r}
 #Computes the MoM estimates of alpha and lambda for a gamma distribution, respectively
 gammaMoM <- function(data) {
-  output <- vector(mode = 'numeric', length = 2)
-  output[1] <- (mean(data)^2) / var(data)
-  output[2] <- mean(data) / var(data)
+  output <- list()
+  output$alpha <- (mean(data)^2) / var(data)
+  output$lambda <- mean(data) / var(data)
   return(output)
 }
 foo <- gammaMoM(data)
-aMoM <- foo[1]
-lMoM <- foo[2]
+aMoM <- foo$alpha
+lMoM <- foo$lambda
 rm(foo)
 ```
 
 Thus the method of moments estimates are $\hat{\alpha}_{MoM}$ = `r aMoM` and $\hat{\lambda}_{MoM}$ = `r lMoM`.
 
-## Maximum Likelihood
+### Maximum Likelihood
 
 The maximum likelihood estimator for $\alpha$ satisfies the following equation
 
@@ -67,7 +67,7 @@ We will use the method of moments estimator as an initial guess to solve for $\h
 ```{r}
 #Computes the MLE estimates of alpha and lambda for a gamma distribution, respectively
 gammaMLE <- function(data) {
-  aMoM <- gammaMoM(data)[1]
+  aMoM <- gammaMoM(data)$alpha
   #Initialize variables
   n <- length(data)
   lnXBar <- log(mean(data))
@@ -79,15 +79,60 @@ gammaMLE <- function(data) {
   #diagnostic plots
   #x <- seq(from = aMoM - .5, to = aMoM + .5, by = 0.01)
   #plot(x, aMLEFun(x))
-  aMLE <- uniroot(aMLEFun, interval = c(aMoM - .5, aMoM + .5))$root
-  lMLE <- aMLE / mean(data)
-  return(c(aMLE, lMLE))
+  output = list()
+  output$alpha <- uniroot(aMLEFun, interval = c(aMoM - .5, aMoM + .5))$root
+  output$lambda <- output$alpha / mean(data)
+  return(output)
 }
 
 foo <- gammaMLE(data)
-aMLE <- foo[1]
-lMLE <- foo[2]
+aMLE <- foo$alpha
+lMLE <- foo$lambda
 rm(foo)
 ```
 
-Thus the maximum likelihood estimates are $\hat{\alpha}_{MLE}$ = `r aMLE` and $\hat{\lambda}_{MLE}$ = `r lMLE`.
+Thus the maximum likelihood estimates are $\hat{\alpha}_{MLE}$ = `r aMLE` and $\hat{\lambda}_{MLE}$ = `r lMLE`. We see that the two are nearly identical. Looking at the estimated distributions versus the histogram shows that the fit is good, and that the two estimated densities are nearly identical.
+
+```{r}
+hist(data, freq = FALSE, breaks = seq(from = 0, to = 750, by = 1), density = 1, main = 'Empirical versus Estimated Probability Density of Interarrival Times', xlab = 'Time (seconds)')
+xSeq <- seq(from = 0, to = 750, by = 1)
+#MoM fit
+lines(xSeq, dgamma(xSeq, shape = aMoM, rate = lMoM), col = 'blue', lwd = 1)
+#MLE fit
+lines(xSeq, dgamma(xSeq, shape = aMLE, rate = lMLE), col = 'red', lwd = 1)
+
+```
+
+## Estimating Standard Errors via Bootstrap
+
+```{r}
+#Bootstrap estimation of standard errors of alpha and lambda of a gamma distribution calculated uses calcFun (MoM or MLE).
+#Create dataSize iid draws from a gamma distribution, then estimates alpha and lambda using calcFun. Repeat this reps times, then calculate the standard deviation of alpha and lambda hat.
+gammaSE <- function(dataSize, reps, alpha, lambda, calcFun) {
+  #Initialize vectors for storing the n calculated alpha and beta hats
+  estAlpha <- vector(mode = 'numeric', length = reps)
+  estLambda <- vector(mode = 'numeric', length = reps)
+  
+  #Generate the reps estimates of alpha and lambda
+  for (i in 1:reps) {
+    data <- rgamma(dataSize, shape = alpha, rate = lambda)
+    ests <- calcFun(data)
+    estAlpha[i] <- ests$alpha
+    estLambda[i] <- ests$lambda
+  }
+  
+  #Return the estimated standard errors
+  output <- list()
+  output$alphaSE <- sd(estAlpha)
+  output$lambdaSE <- sd(estLambda)
+  return(output)
+}
+```
+
+```{r}
+set.seed(1000)
+MoMSE <- gammaSE(dataSize = length(data), reps = 1000, alpha = aMoM, lambda = lMoM, calcFun = gammaMoM)
+MLESE <- gammaSE(dataSize = length(data), reps = 1000, alpha = aMLE, lambda = lMLE, calcFun = gammaMLE)
+```
+
+The estimates for $s_{\hat{\alpha}_{MoM}}$ and $s_{\hat{\lambda}_{MoM}}$ are thus `r MoMSE$alpha` and `r MoMSE$lambda`. The corresponding estimates for $s_{\hat{\alpha}_{MLE}}$ and $s_{\hat{\lambda}_{MLE}}$ are thus `r MLESE$alpha` and `r MLESE$lambda`. The estimated standard errors for the maximum likelihood estimates are significantly lower than the corresponding estimates for the method of moments.
