@@ -106,25 +106,33 @@ lines(xSeq, dgamma(xSeq, shape = aMLE, rate = lMLE), col = 'red', lwd = 1)
 ## Estimating Standard Errors via Bootstrap
 
 ```{r}
-#Bootstrap estimation of standard errors of alpha and lambda of a gamma distribution calculated uses calcFun (MoM or MLE).
-#Create dataSize iid draws from a gamma distribution, then estimates alpha and lambda using calcFun. Repeat this reps times, then calculate the standard deviation of alpha and lambda hat.
-gammaSE <- function(dataSize, reps, alpha, lambda, calcFun) {
-  #Initialize vectors for storing the n calculated alpha and beta hats
-  estAlpha <- vector(mode = 'numeric', length = reps)
-  estLambda <- vector(mode = 'numeric', length = reps)
+#First step in a bootstrap. Generates simulated gamma random variables.
+#Creates dataSize iid draws from a gamma distribution, and estimate alpha and lambda hat using calcFun. Repeat this rep times.
+#Returns a list with alphaHats, lambdaHats being the respective estimates
+gammaSim <- function(dataSize, reps, alpha, lambda, calcFun) {
+  output <- list()
+  output$alphaHats <- vector(mode = 'numeric', length = reps)
+  output$lambdaHats <- vector(mode = 'numeric', length = reps)
   
-  #Generate the reps estimates of alpha and lambda
   for (i in 1:reps) {
     data <- rgamma(dataSize, shape = alpha, rate = lambda)
     ests <- calcFun(data)
-    estAlpha[i] <- ests$alpha
-    estLambda[i] <- ests$lambda
+    output$alphaHats[i] <- ests$alpha
+    output$lambdaHats[i] <- ests$lambda
   }
+  
+  return(output)
+}
+
+
+#Bootstrap estimation of standard errors of alpha and lambda of a gamma distribution calculated uses calcFun (MoM or MLE).
+gammaSE <- function(dataSize, reps, alpha, lambda, calcFun) {
+  ests <- gammaSim(dataSize, reps, alpha, lambda, calcFun)
   
   #Return the estimated standard errors
   output <- list()
-  output$alphaSE <- sd(estAlpha)
-  output$lambdaSE <- sd(estLambda)
+  output$alphaSE <- sd(ests$alphaHats)
+  output$lambdaSE <- sd(ests$lambdaHats)
   return(output)
 }
 ```
@@ -136,3 +144,40 @@ MLESE <- gammaSE(dataSize = length(data), reps = 1000, alpha = aMLE, lambda = lM
 ```
 
 The estimates for $s_{\hat{\alpha}_{MoM}}$ and $s_{\hat{\lambda}_{MoM}}$ are thus `r MoMSE$alpha` and `r MoMSE$lambda`. The corresponding estimates for $s_{\hat{\alpha}_{MLE}}$ and $s_{\hat{\lambda}_{MLE}}$ are thus `r MLESE$alpha` and `r MLESE$lambda`. The estimated standard errors for the maximum likelihood estimates are significantly lower than the corresponding estimates for the method of moments.
+
+## Estimating Confidence Intervals via Bootstrap
+
+```{r}
+#Computes the bootstrapped 100(1-confidenceAlpha) confidence intervals of gamma distribution parameters calculated via calcFun.
+#Note the confidenceAlpha should be a decimal, not a percent.
+#Returns a list with alphaCI and lambdaCI being the confidence intervals.
+gammaCI <- function(dataSize, reps, alpha, lambda, calcFun, confidenceAlpha) {
+  #Convert confidenceAlpha to a decimal if it was accidentally inputted as a percent
+  if (confidenceAlpha > 1) {
+    confidenceAlpha = confidenceAlpha / 100
+  }
+  ests <- gammaSim(dataSize, reps, alpha, lambda, calcFun)
+  
+  #Order the lists
+  sortedAlpha <- sort(ests$alphaHats)
+  sortedLambda <- sort(ests$lambdaHats)
+  
+  low <- floor((confidenceAlpha / 2) * reps)
+  high <- reps - low
+  
+  output <- list()
+  output$alphaCI <- c(sortedAlpha[low], sortedAlpha[high])
+  output$lambdaCI <- c(sortedLambda[low], sortedLambda[high])
+  return(output)
+}
+```
+
+```{r}
+set.seed(2000)
+MoMCI <- gammaCI(dataSize = length(data), reps = 1000, alpha = aMoM, lambda = lMoM, calcFun = gammaMoM, confidenceAlpha = 0.05)
+MLECI <- gammaCI(dataSize = length(data), reps = 1000, alpha = aMLE, lambda = lMLE, calcFun = gammaMLE, confidenceAlpha = 0.05)
+```
+
+The estimated 95% confidence intervals for $\hat{\alpha}_{MoM}$ and $\hat{\lambda}_{MoM}$ are (`r MoMCI$alphaCI[1]`, `r MoMCI$alphaCI[2]`) and (`r MoMCI$lambdaCI[1]`, `r MoMCI$lambdaCI[2]`), respectively. The corresponding estimates for $\hat{\alpha}_{MLE}$ and $\hat{\lambda}_{MLE}$ are (`r MLECI$alphaCI[1]`, `r MLECI$alphaCI[2]`) and (`r MLECI$lambdaCI[1]`, `r MLECI$lambdaCI[2]`), respectively. As we can see, the parameter estimates estimated via method of moments are much less dispersed than the corresponding estimates from method of moments.
+
+The interarrival times are consistent with a Poisson arrival process. In a Poisson arrival process, interarrival times are exponentially distributed, which corresponds to a gamma distribution with $\alpha = 1$. As we can see by the 95% confidence intervals, we can not reject the null hypothesis that $\alpha = 1$ for neither the method of momentsn nor maximum likelihood estimates.
