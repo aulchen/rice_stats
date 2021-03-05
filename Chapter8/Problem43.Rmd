@@ -7,6 +7,10 @@ output: pdf_document
 
 ## Initial Histogram
 
+```{r, global_options, include=FALSE}
+knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(width.cutoff=55))
+```
+
 ```{r, echo=FALSE}
 data <- read.table("../Excel Comma/Chapter 8/gamma-arrivals.csv", quote="\"", comment.char="")
 data <- data[[1]]
@@ -15,7 +19,7 @@ data <- data[[1]]
 The data consists of `r length(data)` observations of interarrival times for gamma rays, with units in seconds.
 
 ```{r}
-hist(data, breaks = seq(from = 0, to = 750, by = 1), main = 'Histogram of Interarrival Times', xlab = 'Time (seconds)')
+hist(data, breaks = seq(from = 0, to = 750, by = 1), main = 'Interarrival Times', xlab = 'Time (seconds)')
 ```
 The interarrival times look roughly exponential, or at least gamma, since the exponential distribution is a special case of the gamma distribution. For the moment, we will assume that interarrival times are distributed via a gamma distribution.
 
@@ -23,7 +27,7 @@ The interarrival times look roughly exponential, or at least gamma, since the ex
 
 ### Method of Moments
 
-The method of moments estimators for $\alpha$ and $\gamma$ are
+The method of moments estimators for $\alpha$ and $\lambda$ are
 
 $$ 
 \hat{\alpha}_{MoM} = \frac{\bar{X}^2}{\bar{\sigma}^2}
@@ -62,7 +66,7 @@ $$
 \hat{\lambda}_{MLE} = \frac{\hat{a}}{\bar{X}}
 $$
 
-We will use the method of moments estimator as an initial guess to solve for $\hat{\alpha}_MLE$.
+We will use the method of moments estimator as an initial guess to solve for $\hat{\alpha}_{MLE}$.
 
 ```{r}
 #Computes the MLE estimates of alpha and lambda for a gamma distribution, respectively
@@ -94,13 +98,14 @@ rm(foo)
 Thus the maximum likelihood estimates are $\hat{\alpha}_{MLE}$ = `r aMLE` and $\hat{\lambda}_{MLE}$ = `r lMLE`. We see that the two are nearly identical. Looking at the estimated distributions versus the histogram shows that the fit is good, and that the two estimated densities are nearly identical.
 
 ```{r}
-hist(data, freq = FALSE, breaks = seq(from = 0, to = 750, by = 1), density = 1, main = 'Empirical versus Estimated Probability Density of Interarrival Times', xlab = 'Time (seconds)')
+hist(data, freq = FALSE, breaks = seq(from = 0, to = 750, by = 1), density = 1, main = 'Probability Densities of Interarrival Times', xlab = 'Time (seconds)')
 xSeq <- seq(from = 0, to = 750, by = 1)
 #MoM fit
 lines(xSeq, dgamma(xSeq, shape = aMoM, rate = lMoM), col = 'blue', lwd = 1)
 #MLE fit
 lines(xSeq, dgamma(xSeq, shape = aMLE, rate = lMLE), col = 'red', lwd = 1)
-
+legend('topright', legend = c('MoM', 'MLE'), col=c('blue', 'red'),
+       lty=1, cex=0.8)
 ```
 
 ## Estimating Standard Errors via Bootstrap
