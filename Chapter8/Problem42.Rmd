@@ -34,8 +34,8 @@ $$
 The log likelihood is thus
 
 $$
-l(\lambda) = ln(\lambda) \sum_{i=1}^n X_i + \sum_{i=1}^n X_i ln(t_i)
-  - \lambda \sum_{i=1}^n t_i - \sum_{i=1}^n ln(X_i !)
+l(\lambda) = \ln(\lambda) \sum_{i=1}^n X_i + \sum_{i=1}^n X_i \ln(t_i)
+  - \lambda \sum_{i=1}^n t_i - \sum_{i=1}^n \ln(X_i !)
 $$
 
 The maximum likelihood estimator satisfies the first-order condition

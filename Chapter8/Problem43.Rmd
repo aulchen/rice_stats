@@ -57,7 +57,7 @@ Thus the method of moments estimates are $\hat{\alpha}_{MoM}$ = `r aMoM` and $\h
 The maximum likelihood estimator for $\alpha$ satisfies the following equation
 
 $$
-nln(\hat{\alpha}) - nln(\bar{X}) + \sum_{i=1}^n ln(X_i) - n \psi(\hat{\alpha}) = 0
+n \ln(\hat{\alpha}) - n \ln(\bar{X}) + \sum_{i=1}^n \ln(X_i) - n \psi(\hat{\alpha}) = 0
 $$
 
 Where $\psi(x)$ is the digamma function, $\frac{\Gamma'(x)}{\Gamma(x)}$. Then an estimator for $\lambda$ is

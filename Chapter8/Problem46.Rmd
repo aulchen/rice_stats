@@ -5,12 +5,12 @@ output: pdf_document
 
 # Overview
 
-Chromatin folding is a poorly understood process in biology. We assume that the chromatin polymers follow a random walk model. In this model, the two-dimensional distance between two chromatin fibers, $R$, follows a Raleigh distribution, with density
+Chromatin folding is process in biology. We assume that chromatin polymers follow a random walk model. In this model, the two-dimensional distance between two chromatin fibers, $R$, follows a Raleigh distribution, with density
 
 $$
 f(r|\theta) = \frac{r}{\theta^2} e^{\frac{-r^2}{2\theta^2}}
 $$
-Where $r \geq 0$ and $\theta > 0$.
+where $r \geq 0$ and $\theta > 0$.
 
 # Estimating Theta
 
@@ -27,7 +27,7 @@ $$
 
 The log likelihood is thus
 $$
-l(\theta) = -2nln(\theta) + \sum_{i=1}^n ln(r_i)
+l(\theta) = -2n \ln(\theta) + \sum_{i=1}^n \ln(r_i)
   -\frac{1}{2\theta^2}\sum_{i=1}^n r_i^2
 $$
 The first-order condition for maximizing the likelihood satisfies
@@ -43,4 +43,76 @@ $$
 $$
 
 ### Asymptotic Variance
+
+As usual, the asymptotic variance of a maximum likelihood estimator is roughly
+
+$$
+Var(\hat{\theta}_{MLE}) \approx \frac{1}{nI(\theta)}
+$$
+where under sufficient smoothness conditions that at the level of this textbook we will assume hold,
+
+$$
+I(\theta) = E \left[\frac{\partial}{\partial \theta} \log(f(x|\theta)) \right]^2
+= - E \left[ \frac{\partial^2}{\partial \theta^2} \log(f(x|\theta))\right] 
+$$
+
+$f(r|\theta) = \frac{r}{\theta^2} e^{\frac{-r^2}{2\theta^2}}$, so
+
+$$
+\begin{aligned}
+\frac{\partial}{\partial \theta} \log f(r|\theta) &= -\frac{2}{\theta} + \frac{r^2}{\theta^3}, \\
+\frac{\partial^2}{\partial \theta^2} \log f(r|\theta) &= \frac{2}{\theta^2} - 3\frac{r^2}{\theta^4}, \\
+I(\theta) &= -\frac{2}{\theta^2} + 3\frac{E(R^2)}{\theta^4}
+\end{aligned}
+$$
+
+The expectation of $R^2$ is
+
+$$
+E(R^2) = \frac{1}{\theta^2} \int_{0}^{\infty} r^3 e^\frac{-r^2}{2\theta^2} dr = 4 \theta^2 \int_0^\infty x^3 e^{-x^2}dx = 2\theta^2 \int_0^\infty ue^{-u} du 
+$$
+
+by making the substitutions $x = \frac{r}{\sqrt{2} \theta}$ and $u = x^2$. Integrating by parts,
+
+$$
+E(R^2) = 2\theta^2 \left[ 
+-ue^{-u} |_0^\infty + \int_0^\infty e^{-u} du\right]
+= -2\theta^2(e^{-u})|_0^\infty = 2\theta^2
+$$
+Thus
+
+$$
+\begin{aligned}
+I(\theta) &= -\frac{4}{\theta^2}, \\
+Var(\hat{\theta}_{MLE}) &\approx \frac{\theta^2}{4n}
+\end{aligned}
+$$
+
+## Method of Moments
+
+### Derivation of the Estimator
+
+The expectation of $R$ is
+
+$$
+E(R) = \frac{1}{\theta^2} \int_{0}^{\infty} r^2 e^\frac{-r^2}{2\theta^2} dr 
+= (2 \sqrt{2}) \theta \int_{0}^{\infty} x^2 e^{-x^2} dx
+$$
+by making the substitution $x = \frac{r}{\sqrt{2} \theta}$. Integrating by parts,
+
+$$
+E(r) = (2 \sqrt{2}) \theta \left[\frac{1}{2} x e^{-x^2}|_{0}^{\infty} 
++ \frac{1}{2} \int_{0}^{\infty} e^{-x^2} dx \right] \\
+= \sqrt{2} \theta \int_{0}^{\infty} e^{-x^2} dx \\
+= \theta \sqrt{\frac{\pi}{2}}
+$$
+
+since $\int_{0}^{\infty} e^{-x^2} dx = \sqrt{\pi}$, and the integrand is an even function. Thus
+
+$$
+\hat{\theta}_{MoM} = \mu_1 \sqrt{\frac{2}{\pi}}
+$$
+
+### Asymptotic Variance
+
 
