@@ -14,6 +14,7 @@ likeFunc <- function(data) {
 
 #Returns the maximum likelihood estimate and estimated variance.
 #output$est is the estimate, output$var is the estimated variance of the MLE estimator
+#by using the asymptotic variance.
 mle <- function(data) {
   n <- length(data)
   output <- list()
@@ -28,9 +29,7 @@ mle <- function(data) {
 # $est - the MLE estimate
 # $var - the estimated variance of the MLE estimator
 # $likeFunc - the likelihood function
-mle_analysis <- function(filepath) {
-  data <- read.table(filepath, quote="\"", comment.char="")
-  data <- data[[1]]
+mle_analysis <- function(data) {
   output <- mle(data)
   output$likeFunc <- likeFunc(data)
   return(output)
@@ -41,12 +40,26 @@ mle_analysis <- function(filepath) {
 # Output:
 # $ est - the method of moments estimate
 # $ var - the estimated variance of the MoM estimator
-mom_analysis <- function(filepath) {
-  data <- read.table(filepath, quote="\"", comment.char="")
-  data <- data[[1]]
+mom_analysis <- function(data) {
   output <- list()
   n <- length(data)
   output$est <- mean(data) * sqrt(2 / pi)
   output$var <- ((4 / pi) - 1) * (output$est **2 / n)
+  return(output)
+}
+
+# Returns the density of a Rayleigh distribution with parameter theta at point x
+drayleigh <- function(x, theta = 1) {
+  return((x / (theta**2)) * exp((-x**2) / (2 * theta**2)))
+}
+
+#Generates Rayleigh random variables with parameter theta
+rrayleigh <- function(n, theta = 1) {
+  #Uniform(0, 1)
+  output <- runif(n, min = 0, max = 1)
+  #Rayleigh 1
+  output <- sqrt(-2 * log(1-output))
+  #Rayleigh theta
+  output <- theta * output
   return(output)
 }
