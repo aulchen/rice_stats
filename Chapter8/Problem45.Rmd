@@ -1,0 +1,271 @@
+---
+title: "Problem 46"
+output: pdf_document
+---
+
+```{r, global_options, include=FALSE}
+knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(width.cutoff=55), echo = FALSE)
+```
+
+```{r}
+#Import helper functions
+source("rayleigh_estimators.R")
+```
+
+# Overview
+
+Chromatin folding is process in biology. We assume that chromatin polymers follow a random walk model. In this model, the two-dimensional distance between two chromatin fibers, $R$, follows a Raleigh distribution, with density
+
+$$
+f(r|\theta) = \frac{r}{\theta^2} e^{\frac{-r^2}{2\theta^2}}
+$$
+where $r \geq 0$ and $\theta > 0$.
+
+# Estimating Theta
+
+## Maximum Likelihood
+
+### Derivation of the Estimator
+
+The likelihood function is
+$$
+lik(\theta) = \frac{1}{\theta^{2n}}
+  e^{-\frac{1}{2\theta^2} \sum_{i=1}^n r_i^2}
+  \prod_{i=1}^n r_i
+$$
+
+The log likelihood is thus
+$$
+l(\theta) = -2n \ln(\theta) + \sum_{i=1}^n \ln(r_i)
+  -\frac{1}{2\theta^2}\sum_{i=1}^n r_i^2
+$$
+The first-order condition for maximizing the likelihood satisfies
+
+$$
+0 = \frac{-2n}{\hat{\theta}} + \frac{1}{\hat{\theta}^3} (\sum_{i=1}^n r_i^2)
+$$
+
+Which, after rearranging, gives the maximum likelihood estimator for $\theta$, $\hat{\theta}_{MLE}$
+
+$$
+\hat{\theta}_{MLE} = \frac{1}{\sqrt{2}} \sqrt{\frac{1}{n} \sum_{i=1}^n r_i^2}
+$$
+
+### Asymptotic Variance
+
+As usual, the asymptotic variance of a maximum likelihood estimator is roughly
+
+$$
+Var(\hat{\theta}_{MLE}) \approx \frac{1}{nI(\theta)}
+$$
+where under sufficient smoothness conditions that at the level of this textbook we will assume hold,
+
+$$
+I(\theta) = E \left[\frac{\partial}{\partial \theta} \log(f(x|\theta)) \right]^2
+= - E \left[ \frac{\partial^2}{\partial \theta^2} \log(f(x|\theta))\right] 
+$$
+
+$f(r|\theta) = \frac{r}{\theta^2} e^{\frac{-r^2}{2\theta^2}}$, so
+
+$$
+\begin{aligned}
+\frac{\partial}{\partial \theta} \log f(r|\theta) &= -\frac{2}{\theta} + \frac{r^2}{\theta^3}, \\
+\frac{\partial^2}{\partial \theta^2} \log f(r|\theta) &= \frac{2}{\theta^2} - 3\frac{r^2}{\theta^4}, \\
+I(\theta) &= -\frac{2}{\theta^2} + 3\frac{E(R^2)}{\theta^4}
+\end{aligned}
+$$
+
+The expectation of $R^2$ is
+
+$$
+E(R^2) = \frac{1}{\theta^2} \int_{0}^{\infty} r^3 e^\frac{-r^2}{2\theta^2} dr = 4 \theta^2 \int_0^\infty x^3 e^{-x^2}dx = 2\theta^2 \int_0^\infty ue^{-u} du 
+$$
+
+by making the substitutions $x = \frac{r}{\sqrt{2} \theta}$ and $u = x^2$. Integrating by parts,
+
+$$
+E(R^2) = 2\theta^2 \left[ 
+-ue^{-u} |_0^\infty + \int_0^\infty e^{-u} du\right]
+= -2\theta^2(e^{-u})|_0^\infty = 2\theta^2
+$$
+Thus
+
+$$
+\begin{aligned}
+I(\theta) &= \frac{4}{\theta^2}, \\
+Var(\hat{\theta}_{MLE}) &\rightarrow \frac{\theta^2}{4n}
+\end{aligned}
+$$
+
+## Method of Moments
+
+### Derivation of the Estimator
+
+The expectation of $R$ is
+
+$$
+E(R) = \frac{1}{\theta^2} \int_{0}^{\infty} r^2 e^\frac{-r^2}{2\theta^2} dr 
+= (2 \sqrt{2}) \theta \int_{0}^{\infty} x^2 e^{-x^2} dx
+$$
+by making the substitution $x = \frac{r}{\sqrt{2} \theta}$. Integrating by parts,
+
+$$
+E(R) = (2 \sqrt{2}) \theta \left[\frac{1}{2} x e^{-x^2}|_{0}^{\infty} 
++ \frac{1}{2} \int_{0}^{\infty} e^{-x^2} dx \right] \\
+= \sqrt{2} \theta \int_{0}^{\infty} e^{-x^2} dx \\
+= \theta \sqrt{\frac{\pi}{2}}
+$$
+
+since $\int_{0}^{\infty} e^{-x^2} dx = \sqrt{\pi}$, and the integrand is an even function. Thus
+
+$$
+\hat{\theta}_{MoM} = \bar{X} \sqrt{\frac{2}{\pi}}
+$$
+
+### Asymptotic Variance
+
+By the Central Limit Theorem, $\bar{X}$ converges to a normal random variable with mean $E(R)$ and variance $\frac{Var(R)}{n}$ as n approaches infinity. From previous results.
+
+$$
+Var(R) = E(R^2) - E(R)^2 = 2\theta^2 - \frac{\pi}{2}\theta^2 = \frac{4 - \pi}{2}\theta^2
+$$
+
+and the asymptotic variance of the method of moments estimator for $\theta$ is
+
+$$
+Var(\hat{\theta}_{MoM}) \rightarrow \left(\frac{4}{\pi} - 1\right) \frac{\theta^2}{n}
+$$
+
+in which $\frac{4}{\pi} - 1 \approx .273295...$
+
+# Data Analysis
+
+## Short Experiment
+
+```{r}
+short_data <- read.table("../Excel Comma/Chapter 8/Chromatin/short.csv", quote="\"", comment.char="")
+short_data <- short_data[[1]]
+short_mle <- mle_analysis(short_data)
+short_mom <- mom_analysis(short_data)
+plot(short_mle$likeFunc, from = 0, to = 2, n = 101, type = 'l', main = 'Likelihood Function for the Short Experimental Data', xlab = 'Theta', ylab = 'Probability')
+```
+
+The MLE estimate is $\hat{\theta}_{MLE} =$ `r short_mle$est`, with an estimated variance of `r short_mle$var`. The MoM estimate is $\hat{\theta}_{MoM} =$ `r short_mom$est`, with an estimated variance of `r short_mom$var`.
+
+```{r}
+shortSeq <- seq(0, 3.5, by = 0.05)
+hist(short_data, breaks = shortSeq, main = 'Histogram and Fitted Densities for Short Data', xlab = 'Distance', freq = FALSE)
+# MoM fit
+lines(shortSeq, drayleigh(shortSeq, theta = short_mom$est), col = 'red')
+# MLE Fit
+lines(shortSeq, drayleigh(shortSeq, theta = short_mle$est), col = 'blue')
+legend(x = 'topright', legend = c('MoM', 'MLE'), lty = c(1, 1), col = c('red', 'blue'))
+rm(shortSeq)
+```
+
+## Medium Experiment
+
+```{r, echo=FALSE}
+medium_data <- read.table("../Excel Comma/Chapter 8/Chromatin/medium.csv", quote="\"", comment.char="")
+medium_data <- medium_data[[1]]
+medium_mle <- mle_analysis(medium_data)
+medium_mom <- mom_analysis(medium_data)
+plot(medium_mle$likeFunc, from = 0, to = 4, n = 501, type = 'l', main = 'Likelihood Function for the Medium Experimental Data', xlab = 'Theta', ylab = 'Probability')
+```
+
+The MLE estimate is $\hat{\theta}_{MLE} =$ `r medium_mle$est`, with an estimated variance of `r medium_mle$var`. The MoM estimate is $\hat{\theta}_{MoM} =$ `r medium_mom$est`, with an estimated variance of `r medium_mom$var`.
+
+```{r}
+medSeq <- seq(0, 6.5, by = 0.05)
+hist(medium_data, breaks = medSeq, main = 'Histogram and Fitted Densities for Medium Data', xlab = 'Distance', freq = FALSE)
+# MoM fit
+lines(medSeq, drayleigh(medSeq, theta = medium_mom$est), col = 'red')
+# MLE Fit
+lines(medSeq, drayleigh(medSeq, theta = medium_mle$est), col = 'blue')
+legend(x = 'topright', legend = c('MoM', 'MLE'), lty = c(1, 1), col = c('red', 'blue'))
+rm(medSeq)
+```
+
+## Long Experiment
+
+```{r, echo=FALSE}
+long_data <- read.table("../Excel Comma/Chapter 8/Chromatin/long.csv", quote="\"", comment.char="")
+long_data <- long_data[[1]]
+long_mle <- mle_analysis(long_data)
+long_mom <- mom_analysis(long_data)
+plot(long_mle$likeFunc, from = 0, to = 6, n = 501, type = 'l', main = 'Likelihood Function for the Long Experimental Data', xlab = 'Theta', ylab = 'Probability')
+```
+
+The MLE estimate is $\hat{\theta}_{MLE} =$ `r long_mle$est`, with an estimated variance of `r long_mle$var`. The MoM estimate is $\hat{\theta}_{MoM} =$ `r long_mom$est`, with an estimated variance of `r long_mom$var`.
+
+```{r}
+longSeq <- seq(0, 12, by = 0.1)
+hist(long_data, breaks = longSeq, main = 'Histogram and Fitted Densities for Long Data', xlab = 'Distance', freq = FALSE)
+# MoM fit
+lines(longSeq, drayleigh(longSeq, theta = long_mom$est), col = 'red')
+# MLE Fit
+lines(longSeq, drayleigh(longSeq, theta = long_mle$est), col = 'blue')
+legend(x = 'topright', legend = c('MoM', 'MLE'), lty = c(1, 1), col = c('red', 'blue'))
+rm(longSeq)
+```
+
+# Tentative Conclusions
+
+We see there is little practical difference between the method of moments estimates and the maximum likelihood fits estimates for theta. The method of moments estimates are slightly larger, though. The larger the genomic separation, the larger the estimate for theta, indicating that the densities become flatter.
+
+# Estimating Theta via Bootstrap
+
+For the medium experiment, we estimate the distribution of $\theta$ by bootstrap, and compare it to our results derived via asymptotic theory. As a reminder, the estimated value of $\hat{\theta}$ is `r medium_mle$est`, and the estimated variance using the asymptotic variance, $\hat{Var(\theta_{MLE})}$ is `r medium_mle$var`.
+
+We will now show that if $X \sim Rayleigh(1)$, then $Y = \theta X$ is distributed $Y \sim Rayleigh(\theta)$. The density function of $X$ is
+
+$$
+f_X(x) = xe^{-\frac{x^2}{2}}, x \geq 0
+$$
+
+Letting $Y = \theta X$,
+
+$$
+P(Y \leq y) = P(\theta X \leq y) = P(X \leq \frac{y}{\theta})
+$$
+since $\theta > 0$. Deriving, $f_Y(y) = \frac{1}{\theta} f_X(\frac{y}{\theta})$ implies that
+
+$$
+f_Y(y) = \frac{y}{\theta^2} e^{-\frac{y^2}{2\theta^2}}, y \geq 0
+$$
+
+which is a Rayleigh variable with parameter $\theta$. Thus, to generate $Rayleigh(\theta)$ random variables, it suffices to generate $Rayleigh(1)$ random variables.
+
+We now find the inverse of the cumulative density function of a $Rayleigh(1)$ random variable. Integrating, $F_X(x) = 1 - e^{-\frac{x^2}{2}}$ when $x \geq 0$ and $0$ otherwise. Taking the inverse, $F^{-1}_X(y) = \sqrt{-2 \ln(1-y)}$ when $y \geq 0$ and $0$ otherwise. Thus, to generate $Rayleigh(1)$ random variables, we can generate Uniform(0, 1) random variables and apply $F^{-1}_X(y)$ to them.
+
+We first generate 1000 samples with size equal to the size of the medium experiment. For each sample, we estimate $\theta$ using method of maximum likelihood. By asymptotic theory, the bootstrapped $\theta$'s should be normally distributed.
+
+```{r}
+set.seed(1000)
+medium_simtheta <- list()
+medium_simtheta$val <- vector(mode = 'numeric', length = length(1000))
+for (i in 1:1000) {
+  medium_simdata <- rrayleigh(n = length(medium_data), theta = medium_mle$est)
+  medium_simtheta$val[i] <- mle(medium_simdata)$est
+}
+rm(medium_simdata)
+```
+
+```{r}
+hist(medium_simtheta$val, breaks = seq(from = 1.8, to = 2.3, by = .01), freq = FALSE,
+     main = 'Histogram of Bootstrapped Theta for Medium Data', xlab = 'Theta')
+medium_simtheta$mean <- mean(medium_simtheta$val)
+medium_simtheta$sd <- sd(medium_simtheta$val)
+medium_simtheta_normal <- dnorm(seq(from = 1.8, to = 2.3, by = .01), mean = medium_simtheta$mean, sd = medium_simtheta$sd)
+lines(x = seq(from = 1.8, to = 2.3, by = .01), y = medium_simtheta_normal)
+legend(x = 'topright', legend = c('Normal Distribution'), lty = c(1), col = c('black'))
+rm(medium_simtheta_normal)
+```
+
+The distribution of bootstrapped $\theta$'s looks roughly normal, though with a slight bimodal tendency. The standard deviation of the bootstrapped $\theta$'s is `r medium_simtheta$sd`, while the standard error from asymptotic theory is `r sqrt(medium_mle$var)`. As expected, the two are very close.
+
+```{r}
+medium_simtheta$sort <- sort(medium_simtheta$val)
+```
+
+We now generate a 95% confidence interval for $\hat{\theta}$. By bootstrap, we take the 25th and 975th percentiles of the estimated $\theta$'s, giving us a 95% confidence interval of (`r medium_simtheta$sort[25]`, `r medium_simtheta$sort[975]`). The corresponding 95% confidence interval via asymptotic theory is (`r medium_mle$est - 1.96*sqrt(medium_mle$var)`, `r medium_mle$est + 1.96*sqrt(medium_mle$var)`). Again, the two are very close.

@@ -19,7 +19,7 @@ mle <- function(data) {
   n <- length(data)
   output <- list()
   output$est <- sqrt(mean(data**2) / 2)
-  output$var <- output$est / (4*n)
+  output$var <- (output$est**2) / (4*n)
   return(output)
 }
 
