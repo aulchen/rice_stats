@@ -1,0 +1,41 @@
+---
+title: "Problem 8"
+output: pdf_document
+---
+```{r, global_options, include=FALSE}
+knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(width.cutoff=55), echo = FALSE)
+```
+
+```{r}
+library(readr)
+Problem8Data <- read_csv("Problem8Data.csv")
+```
+
+The MLE estimator of $p$ for a geometric distribution is
+
+$$
+\hat{p} = \frac{1}{\bar{X}} = \frac{n}{\sum_{i=1}^n X_i}
+$$
+
+To find the asymptotic variance, $I(p)$ equals (assuming the usual smoothness conditions)
+$$
+I(p) = -E\left[\frac{\partial^2}{\partial p^2} \ln p + (x-1)\ln(1-p) \right] = -E\left[-\frac{1}{p^2} - \frac{X-1}{(1-p)^2} \right]\\
+= \frac{1}{p^2} + \frac{E(X) - 1}{(1-p)^2} = \frac{1}{p^2} + \frac{1-p}{p(1-p)^2} = \frac{1}{p^2(1-p)}
+$$
+
+Thus the asymptotic variance of $\hat{p}$ is 
+$$
+Var(\hat{p}) \rightarrow \frac{p^2(1-p)}{n}
+$$
+
+And an estimator for the variance of $\hat{p}$ is
+$$
+s^{2}_\hat{p} = \frac{\hat{p}^2(1-\hat{p})}{n}
+$$
+
+```{r}
+pHat <- sum(Problem8Data$Freq) / sum(Problem8Data$Freq * Problem8Data$NumHops)
+s2_pHat <- (pHat^2) * (1-pHat) / (sum(Problem8Data$Freq))
+```
+
+Estimating using the data, we estimate $p$ to be `r pHat`, with a standard error of `r sqrt(s2_pHat)` and a 95% confidence interval of (`r pHat - 1.96*sqrt(s2_pHat)`, `r pHat + 1.96*sqrt(s2_pHat)`).
