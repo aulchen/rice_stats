@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newenvironment{proof}{\paragraph{Proof:}}{\hfill$\square$}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\author{Arthur Chen}
+\title{Problem 64}
+\date{\today}
+
+\begin{document}
+
+Continuing off of Problem 63, let $Y$ be a random variable indicating whether a randomly sampled item is defective or not. In all cases, $Y|\Theta$ is a Bernoulli random variable with parameter $\theta$.
+
+\subsubsection*{Part a}
+
+Find the marginal distribution of $Y$ with $\Theta$ having a Uniform(0, 1) prior when $X$ is unknown, and when $X=3$.
+
+When $X$ is unknown, the marginal distribution of $\Theta$ is Uniform(0, 1). Thus
+
+\[
+P(Y=0) = \int P(Y=0|\Theta=\theta)f_{\Theta}(\theta)d\theta = \int_0^1 1-\theta d\theta = \frac{1}{2}
+\]
+
+From the previous results, $\Theta|X=3$ follows a Beta(4, 98) distribution. Thus
+
+\begin{align*}
+P(Y=0|X=3) &= \int P(Y=0|\Theta = \theta, X=3) f_{\Theta|X}(\theta|X=3) d\theta \\
+& \frac{102!}{98!4!} \int_0^1 (1-\theta) \theta^3(1-\theta)^{97} d\theta = \frac{1}{4}
+\end{align*}
+
+Thus $P(Y=1|X=3) = \frac{3}{4}$.
+
+\subsubsection*{Part b}
+
+Find the marginal distribution of $Y$ with $\Theta$ having a Beta(1/2, 5) prior when $X$ is unknown, and when $X=3$.
+
+Defining $\alpha = \frac{\Gamma(11/2)}{\Gamma(1/2)\Gamma(5)}$,
+
+\[
+P(Y=0) = \int P(Y=0|\Theta=\theta)f_{\Theta}(\theta)d\theta = \alpha \int_0^1 (1-\theta)\theta^{-\frac{1}{2}} (1-\theta)^4  d\theta
+\]
+
+\end{document}
