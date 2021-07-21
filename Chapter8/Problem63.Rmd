@@ -1,0 +1,70 @@
+---
+title: "Problem 63"
+output: pdf_document
+---
+
+```{r, global_options, include=FALSE}
+knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(width.cutoff=55), echo = FALSE)
+```
+
+The proportion of items that are defective in a production run is $\theta$. 100 items are randomly sampled from the items, of which 3 are found to be defective. Let $X$ denote the number of defective items in the sample. Thus $X|\theta \sim Bin(100, \theta)$.
+
+## Uniform(0, 1) Prior
+
+In this part, the prior distribution of $\theta$ is assumed to be Beta(1, 1), which is equivalent to a Uniform(0, 1) distribution. Thus the joint distribution is
+
+$$
+f_{\Theta|X}(\theta | x) \propto f_{X|\Theta}(x|\theta) f_{\Theta}(\theta) = \theta^x(1-\theta)^{100-x}, \theta \in [0, 1]
+$$
+
+Using the knowledge that $X = 3$,
+
+$$
+f_{\Theta|X}(\theta |x=3) \propto  \theta^3(1-\theta)^{97}, \theta \in [0, 1]
+$$
+which we recognize as a Beta(4, 98) variable.
+
+## Beta(1/2, 5) Prior
+
+Letting the prior of $\theta$ be Beta(1/2, 5),
+
+$$
+f_{\Theta|X}(\theta|x) \propto \theta^{x-\frac{1}{2}}(1-\theta)^{104-x}, \theta \in [0, 1]
+$$
+
+Evaluating at $x = 3$,
+
+$$
+f_{\Theta|X}(\theta|x=3) \propto \theta^{\frac{5}{2}}(1-\theta)^{101}, \theta \in [0, 1]
+$$
+Which we recognize as a Beta(7/2, 102) variable.
+
+## Graphs and Analysis
+
+```{r}
+partA <- list()
+partB <- list()
+partA$prior <- dunif
+partA$post <- function(x) dbeta(x, shape1 = 4, shape2 = 98)
+partB$prior <- function(x) dbeta(x, shape1 = .5, shape2 = 5)
+partB$post <- function(x) dbeta(x, shape1 = 3.5, shape2 = 102)
+
+partA$mean <- 2/51
+partB$mean <- 7/204
+```
+
+```{r}
+distSeq <- seq(from = 0, to = 1, by = 0.001)
+
+plot(distSeq, partA$post(distSeq), type = 'l', lty = 4, xlab = 'Density', ylab = 'Theta', main = 'Uniform(1, 1) Prior', ylim = c(0, 30))
+lines(distSeq, partA$prior(distSeq), lty = 1)
+legend(x = 'topright', legend = c('Prior', 'Posterior'), lty = c(1, 3))
+
+plot(distSeq, partB$post(distSeq), type = 'l', lty = 4, xlab = 'Density', ylab = 'Theta', main = 'Beta(1/2, 5) Prior', ylim = c(0, 30))
+lines(distSeq, partB$prior(distSeq), lty = 1)
+legend(x = 'topright', legend = c('Prior', 'Posterior'), lty = c(1, 3))
+```
+
+The posterior mean of theta with a Uniform(1, 1) prior is `r partA$mean`, while the posterior mean of theta with a Beta(1/2, 5) prior is `r partB$mean`. As can be seen the histograms, the differences in posterior mean can be attributed to differences in the prior distributions. The Beta(1/2, 5) prior has more mass near zero, so that makes the posterior distribution's peak closer to zero.
+
+

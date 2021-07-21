@@ -6,7 +6,7 @@ output: pdf_document
 knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(width.cutoff=55), echo = FALSE)
 ```
 
-```{r}
+```{r, include=FALSE}
 library(readr)
 Problem8Data <- read_csv("Problem8Data.csv")
 ```
@@ -30,7 +30,7 @@ $$
 
 And an estimator for the variance of $\hat{p}$ is
 $$
-s^{2}_\hat{p} = \frac{\hat{p}^2(1-\hat{p})}{n}
+s^{2}_{\hat{p}} = \frac{\hat{p}^2(1-\hat{p})}{n}
 $$
 
 ```{r}
@@ -39,3 +39,35 @@ s2_pHat <- (pHat^2) * (1-pHat) / (sum(Problem8Data$Freq))
 ```
 
 Estimating using the data, we estimate $p$ to be `r pHat`, with a standard error of `r sqrt(s2_pHat)` and a 95% confidence interval of (`r pHat - 1.96*sqrt(s2_pHat)`, `r pHat + 1.96*sqrt(s2_pHat)`).
+
+Visually examining the histogram, we find
+
+```{r}
+estGeom <- 0:11
+estGeom <- dgeom(estGeom, prob = pHat)
+estGeom <- estGeom * sum(Problem8Data$Freq)
+barplot(t(cbind(Problem8Data$Freq, estGeom)), names.arg = rep(paste(Problem8Data$NumHops), each = 2), beside = TRUE)
+```
+
+The left bars are the observed results, while the right bars are the predicted results. The fit is quite good.
+
+With a prior distribution of $P$ being $f_P(p) \sim Unif(0, 1)$, the posterior distribution of $P$ is
+
+$$
+f_{P|\boldsymbol{X}}(p|\boldsymbol{x}) = \frac{p^n(1-p)^{\sum X_i - n}}{\int_0^1 p^n(1-p)^{\sum X_i - n} dp} \\
+= \frac{p^{130}(1-p)^{363 - 130}}{\int_0^1 p^{130}(1-p)^{363 - 130} dp}\\
+= \frac{p^{130}(1-p)^{233}}{\int_0^1 p^{130}(1-p)^{233} dp}, p \in [0,1]
+$$
+
+```{r}
+postDist <- list()
+postDist$propDist <- function(p) (p^130)*(1-p)^233
+postDist$const <- 1/integrate(postDist$propDist, lower = 0, upper = 1)$value
+postDist$distribution <- function(p) postDist$propDist(p) * postDist$const
+postDist$mean <- integrate(function(p) postDist$distribution(p) * p, lower = 0, upper = 1)$value
+postDist$P2 <- integrate(function(p) postDist$distribution(p) * (p^2), lower = 0, upper = 1)$value
+postDist$var <- postDist$P2 - (postDist$mean)^2
+postDist$sd <- sqrt(postDist$var)
+```
+
+The mean of the posterior distribution of $p$ is `r postDist$mean`, while the standard deviation is `r postDist$sd`. This is very close to the results via MLE, though I'm not sure if the difference is real or a result of computer arithmetic errors and errors in evaluating the integral.
