@@ -14,6 +14,8 @@
 
 \begin{document}
 
+\section*{Problem 64}
+
 Continuing off of Problem 63, let $Y$ be a random variable indicating whether a randomly sampled item is defective or not. In all cases, $Y|\Theta$ is a Bernoulli random variable with parameter $\theta$.
 
 \subsubsection*{Part a}
@@ -30,19 +32,25 @@ From the previous results, $\Theta|X=3$ follows a Beta(4, 98) distribution. Thus
 
 \begin{align*}
 P(Y=0|X=3) &= \int P(Y=0|\Theta = \theta, X=3) f_{\Theta|X}(\theta|X=3) d\theta \\
-& \frac{102!}{98!4!} \int_0^1 (1-\theta) \theta^3(1-\theta)^{97} d\theta = \frac{1}{4}
+& \frac{101!}{97!3!} \int_0^1 (1-\theta) \theta^3(1-\theta)^{97} d\theta = \frac{49}{51} \approx 0.9608
 \end{align*}
-
-Thus $P(Y=1|X=3) = \frac{3}{4}$.
 
 \subsubsection*{Part b}
 
 Find the marginal distribution of $Y$ with $\Theta$ having a Beta(1/2, 5) prior when $X$ is unknown, and when $X=3$.
 
-Defining $\alpha = \frac{\Gamma(11/2)}{\Gamma(1/2)\Gamma(5)}$,
+\begin{align*}
+P(Y=0) &= \int P(Y=0|\Theta=\theta)f_{\Theta}(\theta)d\theta \\
+& = \frac{\Gamma(11/2)}{\Gamma(1/2)\Gamma(5)} \int_0^1 (1-\theta)\theta^{-\frac{1}{2}} (1-\theta)^4  d\theta = 0.9091
+\end{align*}
 
-\[
-P(Y=0) = \int P(Y=0|\Theta=\theta)f_{\Theta}(\theta)d\theta = \alpha \int_0^1 (1-\theta)\theta^{-\frac{1}{2}} (1-\theta)^4  d\theta
-\]
+From previous results, $\Theta|X=3$ follows a Beta(7/2, 102) distribution. Thus
+
+\begin{align*}
+P(Y=0|X=3) &= \int P(Y=0|\Theta = \theta, X=3) f_{\Theta|X}(\theta|X=3) d\theta  \\
+&= \frac{\Gamma(211/2)}{\Gamma(7/2)\Gamma(102)}\int_0^1 (1-\theta)\theta^\frac{5}{2}(1-\theta)^{101} d\theta = 0.9668
+\end{align*}
+
+The results make intuitive sense, as the distribution in Part b is more clumped around 0 than the distribution in Part a. Note that after updating, the results of the two priors are the same up to two decimal places.
 
 \end{document}
