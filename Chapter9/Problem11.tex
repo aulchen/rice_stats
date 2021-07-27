@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newenvironment{proof}{\paragraph{Proof:}}{\hfill$\square$}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\author{Arthur Chen}
+\title{Problem 11}
+\date{\today}
+
+\begin{document}
+
+\section*{Problem 11}
+
+Suppose that $X_1 \dots X_{25}$ form an iid random sample from a normal distribution with variance 100. Graph the power of the likelihood ratio test of $H_{0}: \mu = 0$ versus $H_{A}: \mu \neq 0$ as a function of $\mu$, at significance levels .10 and .05. Do the same for a sample size of 100. Compare the graphs and comment.
+
+The modified likelihood test defines the likelihood $\Lambda$ as
+
+\[
+\Lambda = \frac{\max_{\mu = 0} lik(\mu)}
+{\max_{\mu \in \mathbb{R}} lik(\mu)}
+\]
+
+From the derivations in the book, under the null, $\frac{n}{100} \bar{X}^2 \sim \chi_1^2$. High values of the test statistic $\frac{n}{100} \bar{X}^2$ are evidence against the null, so we need a test that rejects the null when $\frac{n}{100} \bar{X}^2 > c$ for some c. To properly choose c, we need to find c such that $P(\frac{n}{100}\bar{X}^2 \geq c) = \alpha$. From the chi-squared tables, when $\alpha = .10$, $c = 2.71$, and when $\alpha = .05$, $c = 3.84$.
+
+To find the power when $\mu \neq 0$, note that under the alternative, $\bar{X} \sim N(\mu, \sigma^2 = \frac{100}{n})$, so $\frac{\sqrt{n}}{10}(\bar{X} - \mu) \sim Z$. To find the probability that the test statistic $\frac{n}{100} \bar{X}^2$ exceeds c,
+
+\begin{align*}
+P\left(\frac{n}{100}\bar{X}^2 > c\right) &= P\left(\bar{X}^2 > \frac{100}{n}c\right) = P\left(\bar{X} > \frac{10}{\sqrt{n}}\sqrt{c}\right) + P\left(\bar{X} < -\frac{10}{\sqrt{n}} \sqrt{c}\right) \\
+&= P\left(\frac{\sqrt{n}}{10}(\bar{X} - \mu) > \sqrt{c} - \frac{\sqrt{n}}{10}\mu\right) + P\left(\frac{\sqrt{n}}{10}(\bar{X} - \mu) < -\sqrt{c} - \frac{\sqrt{n}}{10}\mu\right) \\
+&= 1 - \Phi\left(\sqrt{c} - \frac{\sqrt{n}}{10}\mu \right) + \Phi\left(-\sqrt{c} - \frac{\sqrt{n}}{10}\mu \right) \\
+&= \Phi\left(-\sqrt{c} + \frac{\sqrt{n}}{10}\mu \right) + \Phi\left(-\sqrt{c} - \frac{\sqrt{n}}{10}\mu \right)
+\end{align*}
+
+For $\alpha = .10$, $c = 2.71$, and for $\alpha = .05$, $c = 3.84$. Plotting the power as a function of $\mu$,
+
+\end{document}

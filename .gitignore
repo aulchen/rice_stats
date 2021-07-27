@@ -2,3 +2,9 @@ Excel/
 Excel Comma/
 *.nb.html
 *.ipynb_checkpoints
+*.aux
+*.dvi
+*.log
+*.synctex.gz
+*.csv
+*.out
