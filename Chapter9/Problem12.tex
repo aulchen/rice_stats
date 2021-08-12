@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newenvironment{proof}{\paragraph{Proof:}}{\hfill$\square$}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\author{Arthur Chen}
+\title{Problem 12}
+\date{\today}
+
+\begin{document}
+
+\section*{Problem 12}
+
+Let $X_1 \dots X_n$ be iid from an exponential distribution with $f(x|\theta) = \theta e^{-\theta x}, x \geq 0$. Derive a likelihood test for $H_0: \theta = \theta_0$ versus $H_A: \theta \neq \theta_0$ and show that the rejection region is of the form $\bar{X} e^{-\theta_0 \bar{X}} \leq c$.
+
+The likelihood ratio is
+
+\[
+\Lambda = \frac{\max_{\theta = \theta_0} lik(\theta)}
+{\max_{\theta \in \mathbb{R^+}} lik(\theta)}
+\]
+
+where $lik(\theta|x) = \theta^n e^{-\theta \sum X_i}$. The maximum likelihood estimator of an exponential distribution is $\theta^* = \frac{1}{\bar{X}}$. Since small values of $\Lambda$ are evidence against the null, the test rejects the null when
+
+\[
+\Lambda = \frac{\theta_0^n e^{-\theta_0 n \bar{X}}}
+{(\frac{1}{\bar{X}})^n e^n} < c
+\]
+
+$\theta_0^n$ is a constant and can be immediately absorbed into c. For the exponent, $\bar{X}^n e^{-\theta_0 n \bar{X} - n} = (\bar{X}e^{-\theta_0 \bar{X}e^{-1}})^n$, and since $\Lambda$ is positive, taking the nth root won't introduce more inequalities. Thus by taking the nth root of both sides, $e^{-1}$ can be absorbed into c, the rejection region has the form
+
+\[
+\bar{X} e^{-\theta_0 \bar{X}} < c
+\]
+
+as desired.
+
+\end{document}
