@@ -40,4 +40,39 @@ $\theta_0^n$ is a constant and can be immediately absorbed into c. For the expon
 
 as desired.
 
+\section*{Problem 13}
+
+Continuing from the previous problem, suppose that $\theta_0 = 1$, $n = 10$, and $\alpha = .05$.
+
+\subsection*{Part a}
+
+Show that the rejection region is of the form $\{\bar{X} \leq x_0\} \cup \{\bar{X} \geq x_1\}$, where $x_0, x_1$ are determined by $c$.
+
+First note that $f(\bar{X}) = \bar{X}e^{-\theta_0 \bar{X}}$ is continuously differentiable. Note that $f(\bar{X})$ is always nonnegative, $f(0) = 0$, and $\lim_{\bar{X} \rightarrow \infty} f(\bar{X}) = 0$. Since $f'(\bar{X})$ is continuous, $f'(\bar{X}) = 0$ is a necessary condition for a local extrema. $f(\bar{X}) = 0$ when $\bar{X}^* = \frac{1}{\theta_0}$, and since this is the only inflection point of $f$, $f(\bar{X})$ must have a local extrema at $\bar{X}^*$. It's obvious that this is a maximum, since the endpoint limits go to zero.
+
+Therefore, small values of $f(\bar{X})$ correspond to areas towards 0 and infinity, and away from the central hump. This corresponds to $\{\bar{X} \leq x_0\} \cup \{\bar{X} \geq x_1\}$.
+
+\subsection*{Part b}
+
+Explain why $c$ should be chosen so that $P(\bar{X} e^{-\bar{X}} \leq c) = .05$ when $\theta_0 = 1$.
+
+Under the null hypothesis of $\theta_0 = 1$, the test statistic $\bar{X} e^{-\bar{X}}$ being small is evidence against the null. We want a 95 percent confidence set, so under the null, $P(reject null) = .05$. We reject the null when the test statistic is below a level c, so we need to choose c such that $(reject null) = P(\bar{X} e^{-\bar{X}} \leq c) = .05$.
+
+\subsection*{Part c}
+
+Explain why $\sum_{i=1}^{10} X_i$ and $\bar{X}$ follow gamma distributions. Use this information to choose c.
+
+It's well established that when $X$ and $Y$ are iid Gamma with the same rate parameters, their sum is a Gamma random variable with its rate parameter equal to X and Y's common rate parameter, and its shape parameter equal to the sum of X and Y's shape parameters. Since an exponential random variable is a Gamma random variable with shape parameter 1, $\sum_{i=1}^{10} X_i$ is distributed $Gamma(1, \theta_0)$.
+
+Let $X$ be a Gamma random variable, and $Y = \frac{X}{m}$, with m a positive constant. Then $F_Y{y} = F_X{cy}$, and
+
+\[
+f_Y(y) = cf_X{cy} = m\frac{\theta^\alpha}{\Gamma(\alpha)} (my)^{\alpha-1} e^{-\theta(my)}
+= \frac{(\theta m)^\alpha}{\Gamma(\alpha)} y^{\alpha-1} e^{-(\theta m)y}, y \geq 0
+\]
+
+which is a $Gamma(\alpha, \theta m)$ random variable.
+
+PUT STUFF HERE ABOUT THE DISTRIBUTION OF X BAR.
+
 \end{document}
