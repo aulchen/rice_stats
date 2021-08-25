@@ -1,0 +1,43 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\newenvironment{proof}{\paragraph{Proof:}}{\hfill$\square$}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\author{Arthur Chen}
+\title{Problem 17}
+\date{\today}
+
+\begin{document}
+
+\section*{Problem 17}
+
+Let $X \sim N(0, \sigma^2)$, and let $H_0: \sigma = \sigma_0$, $H_A: \sigma = \sigma_1$, with $\sigma_0 < \sigma_1$. The values of $\sigma_0$ and $\sigma_A$ are fixed.
+
+Let $X_1 \dots X_n$ be an iid sample from X. Find the likelihood ratio as a function of $X_1 \dots X_n$. What values favor the null? What is the rejection region of a $\alpha$ level test? Is the test uniformly most powerful?
+
+The likelihood ratio is the likelihood under the null divided by the likelihood under the alternative. Thus
+
+\[
+\Lambda = \frac{
+\frac{1}{\sqrt{2\pi}\sigma_0}
+e^{-\frac{1}{2\sigma_0^2} \sum_{i=1}^n X_i^2}
+}
+{
+\frac{1}{\sqrt{2\pi}\sigma_1}
+e^{-\frac{1}{2\sigma_1^2} \sum_{i=1}^n X_i^2}
+}
+= \frac{\sigma_0}{\sigma_1} e^{-\frac{1}{2} \sum_{i=1}^n X_i^2 (\frac{1}{\sigma_0^2} - \frac{1}{\sigma_1^2})}
+\]
+
+High values of $\Lambda$ favor the null. Since $\sigma_1 > \sigma_0$, $\frac{1}{\sigma_0^2} - \frac{1}{\sigma_1^2} > 0$, and so small values of $\sum X_i^2$ lead to large values of $\Lambda$. This intuitively makes sense. Since the mean of the distribution is assumed to be zero, small values of $\sum X_i^2$ indicate a smaller sample variance, and thus support the smaller variance of the null.
+
+Under the null, $\frac{X}{\sigma_0} \sim Z$, so $\frac{X^2}{\sigma_0^2} \sim \chi_1^2$ and $\frac{1}{\sigma_0^2} \sum_{i=1}^n X_i^2 \sim \chi_n^2$. Thus, the rejection region at significance level $\alpha$ is when $\frac{1}{\sigma_0^2} \sum_{i=1}^n X_i^2 > \chi_n^2(\alpha)$.
+
+Note that by the Neyman-Pearson lemma, the likelihood test presented here is the most powerful test for testing simple hypothesis $H_0: \sigma = \sigma_0$ against $H_A: \sigma = \sigma_1$, with $\sigma_0 < \sigma_1$. Since the test as presented does not depend on $\sigma_1$, this test is uniformly most powerful for hypotheses of the form $\sigma_1 > \sigma_0$.
+
+\end{document}
